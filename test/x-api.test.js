@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { buildAuthorizationUrl, buildPostPayload, createCodeChallenge, createCodeVerifier, formatApiError } from "../lib/x-api.js";
+import { buildAuthorizationUrl, buildLoopbackRedirectUri, buildPostPayload, createCodeChallenge, createCodeVerifier, formatApiError } from "../lib/x-api.js";
 
 test("PKCE challenge is deterministic", () => {
   assert.equal(createCodeChallenge("a".repeat(43)), "ZtNPunH49FD35FWYhT5Tv8I7vRKQJ8uxMaL0_9eHjNA");
@@ -35,6 +35,10 @@ test("API error formatting redacts bearer values", () => {
   assert.match(message, /X API request failed/iu);
   assert.doesNotMatch(message, /secret-value|another-secret/iu);
   assert.match(message, /redacted/iu);
+});
+
+test("loopback redirect URI uses the Web Server address", () => {
+  assert.equal(buildLoopbackRedirectUri({ host: "0.0.0.0", port: 57288, callbackPath: "/x-publisher/oauth/callback" }), "http://127.0.0.1:57288/x-publisher/oauth/callback");
 });
 
 test("rate limit errors are stable", () => {

@@ -5,6 +5,5 @@
       disabled: false
       config:
         clientId: !!js process.env.X_CLIENT_ID
-        redirectUri: !!js process.env.X_REDIRECT_URI
         callbackPath: /x-publisher/oauth/callback
         startPath: /x-publisher/oauth/start
