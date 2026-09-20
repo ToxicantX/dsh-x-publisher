@@ -126,3 +126,20 @@ npm run check
 ~~~
 
 Tests use deterministic PKCE fixtures and never contact X. The runtime uses native Node fetch and crypto; no third-party OAuth client is bundled.
+
+## Release management
+
+Releases follow [Semantic Versioning](https://semver.org/) (SemVer). Record user-facing changes in [CHANGELOG.md](CHANGELOG.md) and use `vX.Y.Z` tags. After committing package.json and CHANGELOG.md, run the preflight:
+
+~~~powershell
+npm run release:check -- v0.2.0
+~~~
+
+After the preflight passes, create and push the matching tag:
+
+~~~powershell
+git tag v0.2.0
+git push origin v0.2.0
+~~~
+
+Pushing a matching tag triggers GitHub Actions validation and creates a GitHub Release; npm publishing is not automatic.

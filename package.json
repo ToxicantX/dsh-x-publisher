@@ -1,6 +1,6 @@
 {
   "name": "dsh-x-publisher",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "DSH plugin for X OAuth 2.0 PKCE account authorization and official API posting",
   "private": false,
   "type": "module",
@@ -15,6 +15,8 @@
     "cordis.patch.yml",
     "README.md",
     "README.en.md",
+    "CHANGELOG.md",
+    "scripts",
     ".gitignore"
   ],
   "engines": {
@@ -42,6 +44,7 @@
   },
   "scripts": {
     "check": "node --check lib/index.js && node --check lib/x-api.js && node --check lib/client.js",
-    "test": "node --test test/x-api.test.js"
+    "test": "node --test test/x-api.test.js test/release-check.test.js",
+    "release:check": "node ./scripts/release-check.mjs"
   }
 }

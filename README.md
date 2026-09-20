@@ -6,6 +6,7 @@
 [![Issues](https://img.shields.io/github/issues/ToxicantX/dsh-x-publisher)](https://github.com/ToxicantX/dsh-x-publisher/issues)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D20-339933?logo=nodedotjs&logoColor=white)](./package.json)
 [![DSH](https://img.shields.io/badge/dsh-0.1.6--alpha.2-4c8bf5)](https://github.com/deepseek-ai/deepseek-harness)
+[![Tests](https://img.shields.io/github/actions/workflow/status/ToxicantX/dsh-x-publisher/test.yml?branch=main&label=tests)](https://github.com/ToxicantX/dsh-x-publisher/actions/workflows/test.yml)
 
 [中文](#中文) | [English](#english)
 
@@ -135,6 +136,23 @@ npm run check
 
 测试使用确定性的 PKCE fixture，不会访问 X。运行时使用 Node 原生 fetch 和 crypto，不捆绑第三方 OAuth 客户端。
 
+### 发布管理
+
+发布遵循[语义化版本](https://semver.org/)（SemVer）。面向用户的变更必须记录在 [CHANGELOG.md](CHANGELOG.md)，版本号使用 `vX.Y.Z` tag。提交 package.json 和 CHANGELOG.md 后运行预检：
+
+~~~powershell
+npm run release:check -- v0.2.0
+~~~
+
+预检通过后创建并推送匹配的 tag：
+
+~~~powershell
+git tag v0.2.0
+git push origin v0.2.0
+~~~
+
+推送匹配的 tag 会触发 GitHub Actions 验证并创建 GitHub Release；不会自动发布到 npm。
+
 ## English
 
 ### Overview
@@ -260,3 +278,20 @@ npm run check
 ~~~
 
 Tests use deterministic PKCE fixtures and never contact X. The runtime uses native Node fetch and crypto; no third-party OAuth client is bundled.
+
+### Release management
+
+Releases follow [Semantic Versioning](https://semver.org/) (SemVer). Record user-facing changes in [CHANGELOG.md](CHANGELOG.md) and use `vX.Y.Z` tags. After committing package.json and CHANGELOG.md, run the preflight:
+
+~~~powershell
+npm run release:check -- v0.2.0
+~~~
+
+After the preflight passes, create and push the matching tag:
+
+~~~powershell
+git tag v0.2.0
+git push origin v0.2.0
+~~~
+
+Pushing a matching tag triggers GitHub Actions validation and creates a GitHub Release; npm publishing is not automatic.
