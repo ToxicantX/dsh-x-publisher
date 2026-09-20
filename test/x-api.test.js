@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { buildAuthorizationUrl, buildLoopbackRedirectUri, normalizeClientId, buildPostPayload, createCodeChallenge, createCodeVerifier, formatApiError } from "../lib/x-api.js";
+import { buildAuthorizationUrl, buildLoopbackRedirectUri, normalizeClientId, stripTrailingSlashes, buildPostPayload, createCodeChallenge, createCodeVerifier, formatApiError } from "../lib/x-api.js";
 
 test("PKCE challenge is deterministic", () => {
   assert.equal(createCodeChallenge("a".repeat(43)), "ZtNPunH49FD35FWYhT5Tv8I7vRKQJ8uxMaL0_9eHjNA");
@@ -45,6 +45,11 @@ test("client ID normalization rejects blank and whitespace values", () => {
   assert.equal(normalizeClientId("  public-client-id  "), "public-client-id");
   assert.throws(() => normalizeClientId("  "), /non-empty/iu);
   assert.throws(() => normalizeClientId("public client id"), /whitespace/iu);
+});
+
+test("trailing API base URL slashes are normalized", () => {
+  assert.equal(stripTrailingSlashes("https://api.x.com///"), "https://api.x.com");
+  assert.equal(stripTrailingSlashes("https://api.x.com"), "https://api.x.com");
 });
 
 test("rate limit errors are stable", () => {

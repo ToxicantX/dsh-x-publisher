@@ -2,6 +2,13 @@
 
 All notable changes to this plugin are documented here.
 
+## [0.2.3] - 2026-09-20
+
+### Fixed
+
+- Fixed backend startup so the Client ID settings route is registered instead of failing on API URL normalization.
+- Added regression coverage for trailing API base URL slash normalization.
+
 ## [0.2.2] - 2026-09-20
 
 ### Fixed
