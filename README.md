@@ -1,40 +1,59 @@
 # dsh-x-publisher
 
-A standalone DeepSeek Harness plugin for publishing posts through the official X API. The plugin does not call an LLM itself: DSH forms the post text from the user's requirements, then the x_post tool submits the exact text after the user requests publication.
+中文（默认） | [English](README.en.md)
 
-## Features
+一个独立的 DeepSeek Harness 插件，通过 X 官方 API 完成账户授权和发帖。
 
-- OAuth 2.0 Authorization Code with PKCE using S256.
-- A DSH authorization flow that opens X and stores the resulting grant in the DSH credentials store.
-- Loopback-friendly start and callback routes.
-- Automatic refresh-token exchange near access-token expiry.
-- x_account_status and x_post model tools.
+插件本身不会调用 LLM。DSH 会根据用户需求生成最终文本，然后在用户明确要求发布后调用 x_post 提交原文。
 
-The plugin uses X API v2 only. It does not use browser cookies, password login, scraping, or unofficial posting endpoints.
+## 功能
 
-## X developer setup
+- 使用 OAuth 2.0 Authorization Code with PKCE，采用 S256。
+- 通过 DSH authorization flow 打开 X 授权页面。
+- 将访问令牌和刷新令牌作为 DSH GrantRecord 保存，不写入插件目录。
+- 提供本地 Web 授权开始路由和一次性 OAuth 回调路由。
+- Access Token 即将过期时自动使用 Refresh Token 刷新。
+- 提供 x_account_status 和 x_post 工具。
+- 只使用 X API v2，不使用 Cookie、密码登录、爬虫或非官方接口。
 
-Create an application in the X Developer Portal and enable OAuth 2.0 User Authentication.
+## X Developer Portal 配置
 
-Use a public client with PKCE and configure an exact callback such as:
+在 X Developer Portal 创建应用并启用 OAuth 2.0 User Authentication。
+
+使用 Public Client + PKCE，并配置精确匹配的回调地址，例如：
 
 ~~~text
 http://127.0.0.1:3080/x-publisher/oauth/callback
 ~~~
 
-Required scopes are tweet.read, tweet.write, users.read, and offline.access. The redirect URI in the portal, plugin config, and authorization request must be byte-for-byte identical. No client secret is needed for this public PKCE flow.
+需要申请以下 scopes：
 
-## Install as a DSH bundle
+- tweet.read
+- tweet.write
+- users.read
+- offline.access
 
-Install the published bundle directly from the GitHub repository through the DSH plugin command:
+X Developer Portal、插件配置和授权请求中的 Redirect URI 必须逐字节一致。Public PKCE 流程不需要 Client Secret。
+
+## 远程安装
+
+通过 DSH 插件命令从 GitHub SSH 仓库安装：
 
 ~~~powershell
 dsh plugin --profile web add "git+ssh://git@github.com/ToxicantX/dsh-x-publisher.git"
 ~~~
 
-The command forwards the remote Git specification to pnpm. DSH enables a newly installed bundle by default; restart DSH Web after the installation so the new runtime module is loaded. The Web Plugins page can also install the same Git SSH URL.
+该命令会把远程 Git 地址交给当前 profile 的 pnpm。新安装的 bundle 默认会启用。安装完成后重启 DSH Web，使新的运行时模块加载生效。
 
-Set the public client values before starting DSH. They are not secrets:
+也可以在 DSH Web 的 Plugins 页面中使用以下 Git SSH 地址安装：
+
+~~~text
+git+ssh://git@github.com/ToxicantX/dsh-x-publisher.git
+~~~
+
+## 启动配置
+
+Client ID 是公开值，不是密钥。启动 DSH 前设置：
 
 ~~~powershell
 $env:X_CLIENT_ID = "your-public-client-id"
@@ -42,39 +61,43 @@ $env:X_REDIRECT_URI = "http://127.0.0.1:3080/x-publisher/oauth/callback"
 dsh web
 ~~~
 
-The plugin bundle reads those values through cordis.patch.yml. For a persistent local setup, put them in the DSH home .env file. Never put access tokens, refresh tokens, or client secrets in this directory or in cordis.patch.yml.
+也可以把这两个非敏感变量放入 DSH home 的 .env 文件。不要把 Access Token、Refresh Token 或 Client Secret 写入插件目录或 cordis.patch.yml。
 
-The target profile must include authorization, credentials, webServer, and tools. This bundle is intended for DSH Web because the browser callback needs the Web server.
+目标 profile 必须提供 authorization、credentials、webServer 和 tools 服务。本插件面向 DSH Web，因为 OAuth 浏览器回调需要 Web Server。
 
-## Authorize an account
+## 授权账户
 
-Use the DSH authorization UI and choose X posting account, or open this URL while DSH Web is running:
+在 DSH 授权界面选择 X posting account，或者在 DSH Web 运行时打开：
 
 ~~~text
 http://127.0.0.1:3080/x-publisher/oauth/start
 ~~~
 
-The start route redirects to X. After approval, X redirects to the exact callback and the plugin stores the access and refresh tokens as an opaque grant under the DSH credentials store. The local credentials file is normally $DSH_HOME/.credentials.yaml and is managed by dsh-credentials-local.
+开始路由会将浏览器重定向到 X。用户批准后，X 会重定向到精确回调地址，插件将 Access Token、Refresh Token 和有限的账户信息保存到 DSH credentials store。
 
-## Use from DSH
+凭据文件通常位于 $DSH_HOME/.credentials.yaml，由 dsh-credentials-local 管理。
 
-After authorization, ask DSH to publish a post and include the desired tone, language, links, and constraints. The agent should form the final text and call x_post only when the user explicitly requested publication. Optional fields support replying to or quoting an existing X post.
+## 在 DSH 中使用
 
-The tool returns the created post ID, text, and canonical x.com URL. Account status never returns token fields.
+授权完成后，向 DSH 描述要发布的内容、语气、语言、链接和限制条件。Agent 应先根据需求形成最终文本，只有在用户明确要求发布时才调用 x_post。
 
-## Checks
+x_post 支持普通发帖，也支持通过 replyToTweetId 回复现有帖子，或通过 quoteTweetId 引用现有帖子。
+
+工具只返回创建后的帖子 ID、文本和 x.com URL。x_account_status 不会返回任何 Token 字段。
+
+## 检查
 
 ~~~powershell
 npm test
 npm run check
 ~~~
 
-Tests use deterministic PKCE fixtures and never contact X. The runtime uses native fetch and Node crypto; no third-party OAuth client is bundled.
+测试使用确定性的 PKCE fixture，不会访问 X。运行时只使用 Node 原生 fetch 和 crypto，不捆绑第三方 OAuth 客户端。
 
-## Security
+## 安全说明
 
-- State and PKCE verifier are generated per authorization attempt and the callback is accepted once.
-- Authorization attempts expire after ten minutes and observe DSH cancellation and disposal.
-- Use loopback locally. Use TLS and an authenticated reverse proxy before exposing a callback beyond the local machine.
-- Errors are sanitized and callback query values and bearer tokens are never logged or returned by tools.
-- Posting is an external side effect and remains an explicit user action.
+- 每次授权都会生成独立的 state 和 PKCE verifier，回调只接受一次。
+- 授权尝试十分钟后过期，并响应 DSH 取消和插件销毁。
+- 本地开发建议只使用 loopback 地址；对外暴露回调前必须使用 TLS 和受保护的反向代理。
+- 错误信息经过清理，不记录回调查询参数和 Bearer Token。
+- 发帖属于外部副作用，必须保持为用户明确触发的操作。
