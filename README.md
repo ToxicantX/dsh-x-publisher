@@ -26,13 +26,13 @@ Required scopes are tweet.read, tweet.write, users.read, and offline.access. The
 
 ## Install as a DSH bundle
 
-From the DSH Web profile, install the local package:
+Install the published bundle directly from the GitHub repository through the DSH plugin command:
 
 ~~~powershell
-pnpm --dir "$env:USERPROFILE/.dsh/profiles/web" add "file:E:/workspace/PluginProjects/dsh-x-publisher"
+dsh plugin --profile web add "git+ssh://git@github.com/ToxicantX/dsh-x-publisher.git"
 ~~~
 
-Add dsh-x-publisher to the profile dsh.profile.bundles list if the plugin manager did not add it automatically. Restart DSH Web after changing the profile composition.
+The command forwards the remote Git specification to pnpm. DSH enables a newly installed bundle by default; restart DSH Web after the installation so the new runtime module is loaded. The Web Plugins page can also install the same Git SSH URL.
 
 Set the public client values before starting DSH. They are not secrets:
 
