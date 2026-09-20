@@ -1,6 +1,6 @@
 {
   "name": "dsh-x-publisher",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "DSH plugin for X OAuth 2.0 PKCE account authorization and official API posting",
   "private": false,
   "type": "module",

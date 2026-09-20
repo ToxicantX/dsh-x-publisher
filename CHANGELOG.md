@@ -2,6 +2,12 @@
 
 All notable changes to this plugin are documented here.
 
+## [0.2.5] - 2026-09-20
+
+### Fixed
+
+- Fall back to the current DSH Web origin when an older backend does not return the generated Callback URL.
+
 ## [0.2.4] - 2026-09-20
 
 ### Added
