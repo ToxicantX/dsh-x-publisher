@@ -2,6 +2,12 @@
 
 All notable changes to this plugin are documented here.
 
+## [0.2.1] - 2026-09-20
+
+### Fixed
+
+- The X authorization button now saves an entered Client ID before opening the authorization page.
+
 ## [0.2.0] - 2026-09-20
 
 ### Added
