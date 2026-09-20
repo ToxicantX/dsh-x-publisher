@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { buildAuthorizationUrl, buildLoopbackRedirectUri, buildPostPayload, createCodeChallenge, createCodeVerifier, formatApiError } from "../lib/x-api.js";
+import { buildAuthorizationUrl, buildLoopbackRedirectUri, normalizeClientId, buildPostPayload, createCodeChallenge, createCodeVerifier, formatApiError } from "../lib/x-api.js";
 
 test("PKCE challenge is deterministic", () => {
   assert.equal(createCodeChallenge("a".repeat(43)), "ZtNPunH49FD35FWYhT5Tv8I7vRKQJ8uxMaL0_9eHjNA");
@@ -39,6 +39,12 @@ test("API error formatting redacts bearer values", () => {
 
 test("loopback redirect URI uses the Web Server address", () => {
   assert.equal(buildLoopbackRedirectUri({ host: "0.0.0.0", port: 57288, callbackPath: "/x-publisher/oauth/callback" }), "http://127.0.0.1:57288/x-publisher/oauth/callback");
+});
+
+test("client ID normalization rejects blank and whitespace values", () => {
+  assert.equal(normalizeClientId("  public-client-id  "), "public-client-id");
+  assert.throws(() => normalizeClientId("  "), /non-empty/iu);
+  assert.throws(() => normalizeClientId("public client id"), /whitespace/iu);
 });
 
 test("rate limit errors are stable", () => {
