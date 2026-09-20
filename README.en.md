@@ -2,53 +2,72 @@
 
 [中文（默认）](README.md) | English
 
-A standalone DeepSeek Harness plugin for account authorization and posting through the official X API.
+This file contains the English version of the project documentation. The main README keeps Chinese as the default display language and contains the same bilingual sections.
 
-The plugin does not call an LLM itself. DSH forms the final text from the user's requirements, then calls x_post with the exact text only after the user explicitly requests publication.
+## Overview
+
+dsh-x-publisher is a standalone DeepSeek Harness bundle plugin that provides X account authorization, credential persistence, token refresh, and posting through the official X API.
+
+The plugin does not call an LLM itself. A DSH Agent forms the final text from the user's requirements and calls x_post only after the user explicitly requests publication.
 
 ## Features
 
 - OAuth 2.0 Authorization Code with PKCE using S256.
-- A DSH authorization flow that opens the X authorization page.
-- Access and refresh tokens stored as a DSH GrantRecord, never in the plugin directory.
+- DSH authorization flow for opening the X authorization page.
+- Access tokens, refresh tokens, and limited account data stored as a DSH GrantRecord.
 - Local Web routes for starting authorization and receiving a one-time OAuth callback.
 - Automatic refresh-token exchange near access-token expiry.
 - x_account_status and x_post tools.
-- X API v2 only: no cookies, password login, scraping, or unofficial endpoints.
+- Normal posts, replies, and quoted posts through X API v2.
+- No cookies, password login, scraping, or unofficial endpoints.
+
+## Requirements
+
+- DeepSeek Harness 0.1.6-alpha.2 or a compatible newer release.
+- Node.js 20 or newer.
+- A DSH Web profile with authorization, credentials, webServer, and tools services.
+- An X Developer application with OAuth 2.0 User Authentication enabled.
+- A Public Client using PKCE with tweet.write, users.read, and offline.access scopes.
 
 ## X Developer Portal setup
 
 Create an application in the X Developer Portal and enable OAuth 2.0 User Authentication.
 
-Use a Public Client with PKCE and configure an exact callback such as:
+Use Public Client + PKCE and configure an exact Callback URI such as:
 
 ~~~text
 http://127.0.0.1:3080/x-publisher/oauth/callback
 ~~~
 
-Request these scopes:
+The Redirect URI in the X Developer Portal, plugin environment, and authorization request must match byte-for-byte. A Public PKCE flow does not need a Client Secret.
+
+Required scopes:
 
 - tweet.read
 - tweet.write
 - users.read
 - offline.access
 
-The Redirect URI in the X Developer Portal, plugin configuration, and authorization request must match byte-for-byte. A Public PKCE flow does not need a Client Secret.
+## Installation
 
-## Remote installation
-
-Install from the GitHub SSH repository through the DSH plugin command:
+Install from the public GitHub repository into the DSH Web profile. No SSH key is required:
 
 ~~~powershell
-dsh plugin --profile web add "git+ssh://git@github.com/ToxicantX/dsh-x-publisher.git"
+dsh plugin --profile web add -w github:ToxicantX/dsh-x-publisher
 ~~~
 
-The command forwards the remote Git specification to pnpm for the selected profile. A newly installed bundle is enabled by default. Restart DSH Web after installation so the new runtime module is loaded.
+Restart DSH Web and refresh the browser after installation. The new bundle is enabled by default.
 
-The same Git SSH URL can also be entered in the DSH Web Plugins page:
+When running DSH from a source checkout, use pnpm dsh instead of dsh:
+
+~~~powershell
+pnpm dsh plugin --profile web add -w github:ToxicantX/dsh-x-publisher
+~~~
+
+The same public GitHub address can also be entered in the DSH Web Plugins page:
 
 ~~~text
-git+ssh://git@github.com/ToxicantX/dsh-x-publisher.git
+github:ToxicantX/dsh-x-publisher
 ~~~
 
 ## Startup configuration
@@ -61,43 +80,50 @@ $env:X_REDIRECT_URI = "http://127.0.0.1:3080/x-publisher/oauth/callback"
 dsh web
 ~~~
 
-For a persistent local setup, put these non-sensitive variables in the DSH home .env file. Never put access tokens, refresh tokens, or client secrets in the plugin directory or cordis.patch.yml.
+For a persistent local setup, put these non-sensitive variables in the DSH home .env file. Never put access tokens, refresh tokens, or client secrets in the plugin directory, profile patch, or chat messages.
 
-The target profile must provide authorization, credentials, webServer, and tools. This plugin targets DSH Web because the OAuth browser callback requires the Web Server.
+## Usage
 
-## Authorize an account
+1. Open DSH Web.
+2. Install the plugin with the public GitHub command above.
+3. Configure the X Client ID and exact Callback URI.
+4. Restart DSH Web.
+5. Choose X posting account in the DSH authorization UI, or open the authorization start URL.
+6. Complete X account authorization in the browser.
+7. Describe the desired content, tone, language, links, and constraints to DSH.
+8. Call x_post only after the user explicitly requests publication.
 
-Use the DSH authorization UI and choose X posting account, or open this URL while DSH Web is running:
+Authorization start URL:
 
 ~~~text
 http://127.0.0.1:3080/x-publisher/oauth/start
 ~~~
 
-The start route redirects the browser to X. After approval, X redirects to the exact callback URI and the plugin stores the access token, refresh token, and limited account information in the DSH credentials store.
+x_post parameters:
 
-The credentials file is normally located at $DSH_HOME/.credentials.yaml and is managed by dsh-credentials-local.
-
-## Use from DSH
-
-After authorization, describe the desired content, tone, language, links, and constraints. The agent should form the final text and call x_post only after the user explicitly requests publication.
-
-x_post supports normal posts, replies through replyToTweetId, and quotes through quoteTweetId.
+- text: final post text, required.
+- replyToTweetId: optional post ID to reply to.
+- quoteTweetId: optional post ID to quote.
 
 The tool returns only the created post ID, text, and canonical x.com URL. x_account_status never returns token fields.
 
-## Checks
+## Credentials and security
+
+- Each authorization attempt gets a new state and PKCE verifier.
+- OAuth callbacks are accepted once and expire after ten minutes.
+- The flow observes DSH cancellation and plugin disposal.
+- Credentials are managed by the DSH credentials store, normally in .credentials.yaml under the DSH home.
+- Errors are sanitized; callback query values and bearer tokens are never logged.
+- Use loopback locally. Use TLS and an authenticated reverse proxy before exposing a callback beyond the local machine.
+- Posting is an external side effect and remains an explicit user action.
+
+## Local development
 
 ~~~powershell
+git clone https://github.com/ToxicantX/dsh-x-publisher.git
+cd dsh-x-publisher
 npm test
 npm run check
 ~~~
 
 Tests use deterministic PKCE fixtures and never contact X. The runtime uses native Node fetch and crypto; no third-party OAuth client is bundled.
-
-## Security
-
-- Each authorization attempt gets a new state and PKCE verifier; callbacks are accepted once.
-- Authorization attempts expire after ten minutes and observe DSH cancellation and plugin disposal.
-- Use loopback locally. Use TLS and an authenticated reverse proxy before exposing a callback beyond the local machine.
-- Errors are sanitized; callback query values and bearer tokens are never logged.
-- Posting is an external side effect and remains an explicit user action.
