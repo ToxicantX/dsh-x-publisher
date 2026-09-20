@@ -2,6 +2,13 @@
 
 All notable changes to this plugin are documented here.
 
+## [0.2.4] - 2026-09-20
+
+### Added
+
+- Display the generated DSH Callback URL with a copy button.
+- Add a shortcut button to open the X Developer Console.
+
 ## [0.2.3] - 2026-09-20
 
 ### Fixed

@@ -88,6 +88,8 @@ X_CLIENT_ID 是 X Developer 应用的公开标识，必须在授权请求发出�
 3. 点击 **保存**。
 4. 点击 **打开 X 授权**，在新标签页完成账户授权。
 
+设置页会自动显示当前 DSH Web 生成的 Callback URL。点击 **复制** 可复制完整地址，点击 **打开 X Developer Console** 可直接进入 X 控制台进行应用设置。
+
 设置值由插件保存到 DSH credentials store，重启 DSH 后仍然有效。旧版环境变量 X_CLIENT_ID 仍可作为初始值使用，但设置页保存的值优先。不要设置 X_REDIRECT_URI；插件会在授权开始时根据当前 DSH Web Server 自动生成回调地址。不要把 Access Token、Refresh Token 或 Client Secret 写入插件目录、profile patch 或聊天内容。
 
 ### 使用方法
@@ -141,14 +143,14 @@ npm run check
 发布遵循[语义化版本](https://semver.org/)（SemVer）。面向用户的变更必须记录在 [CHANGELOG.md](CHANGELOG.md)，版本号使用 `vX.Y.Z` tag。提交 package.json 和 CHANGELOG.md 后运行预检：
 
 ~~~powershell
-npm run release:check -- v0.2.3
+npm run release:check -- v0.2.4
 ~~~
 
 预检通过后创建并推送匹配的 tag：
 
 ~~~powershell
-git tag v0.2.3
-git push origin v0.2.3
+git tag v0.2.4
+git push origin v0.2.4
 ~~~
 
 推送匹配的 tag 会触发 GitHub Actions 验证并创建 GitHub Release；不会自动发布到 npm。
@@ -284,14 +286,14 @@ Tests use deterministic PKCE fixtures and never contact X. The runtime uses nati
 Releases follow [Semantic Versioning](https://semver.org/) (SemVer). Record user-facing changes in [CHANGELOG.md](CHANGELOG.md) and use `vX.Y.Z` tags. After committing package.json and CHANGELOG.md, run the preflight:
 
 ~~~powershell
-npm run release:check -- v0.2.3
+npm run release:check -- v0.2.4
 ~~~
 
 After the preflight passes, create and push the matching tag:
 
 ~~~powershell
-git tag v0.2.3
-git push origin v0.2.3
+git tag v0.2.4
+git push origin v0.2.4
 ~~~
 
 Pushing a matching tag triggers GitHub Actions validation and creates a GitHub Release; npm publishing is not automatic.
