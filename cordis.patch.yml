@@ -1,5 +1,9 @@
 # Adds the X publisher to a profile that includes the DSH Web services.
 - insert:
+    - id: authorization
+      name: '@deepseek-ai/dsh-authorization'
+      disabled: false
+
     - id: x-publisher
       name: dsh-x-publisher
       disabled: false

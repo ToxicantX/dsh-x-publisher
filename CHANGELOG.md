@@ -2,6 +2,13 @@
 
 All notable changes to this plugin are documented here.
 
+## [0.2.6] - 2026-09-20
+
+### Fixed
+
+- Mount the DSH authorization service required by the X publisher backend routes.
+- Keep the prepared OAuth tab navigable after saving the Client ID while disconnecting its opener.
+
 ## [0.2.5] - 2026-09-20
 
 ### Fixed
