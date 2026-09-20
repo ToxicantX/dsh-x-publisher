@@ -132,14 +132,14 @@ Tests use deterministic PKCE fixtures and never contact X. The runtime uses nati
 Releases follow [Semantic Versioning](https://semver.org/) (SemVer). Record user-facing changes in [CHANGELOG.md](CHANGELOG.md) and use `vX.Y.Z` tags. After committing package.json and CHANGELOG.md, run the preflight:
 
 ~~~powershell
-npm run release:check -- v0.2.1
+npm run release:check -- v0.2.2
 ~~~
 
 After the preflight passes, create and push the matching tag:
 
 ~~~powershell
-git tag v0.2.1
-git push origin v0.2.1
+git tag v0.2.2
+git push origin v0.2.2
 ~~~
 
 Pushing a matching tag triggers GitHub Actions validation and creates a GitHub Release; npm publishing is not automatic.

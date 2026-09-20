@@ -2,6 +2,12 @@
 
 All notable changes to this plugin are documented here.
 
+## [0.2.2] - 2026-09-20
+
+### Fixed
+
+- Align the Client ID input with DSH light and dark theme colors, including placeholder and focus states.
+
 ## [0.2.1] - 2026-09-20
 
 ### Fixed

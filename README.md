@@ -141,14 +141,14 @@ npm run check
 发布遵循[语义化版本](https://semver.org/)（SemVer）。面向用户的变更必须记录在 [CHANGELOG.md](CHANGELOG.md)，版本号使用 `vX.Y.Z` tag。提交 package.json 和 CHANGELOG.md 后运行预检：
 
 ~~~powershell
-npm run release:check -- v0.2.1
+npm run release:check -- v0.2.2
 ~~~
 
 预检通过后创建并推送匹配的 tag：
 
 ~~~powershell
-git tag v0.2.1
-git push origin v0.2.1
+git tag v0.2.2
+git push origin v0.2.2
 ~~~
 
 推送匹配的 tag 会触发 GitHub Actions 验证并创建 GitHub Release；不会自动发布到 npm。
@@ -284,14 +284,14 @@ Tests use deterministic PKCE fixtures and never contact X. The runtime uses nati
 Releases follow [Semantic Versioning](https://semver.org/) (SemVer). Record user-facing changes in [CHANGELOG.md](CHANGELOG.md) and use `vX.Y.Z` tags. After committing package.json and CHANGELOG.md, run the preflight:
 
 ~~~powershell
-npm run release:check -- v0.2.1
+npm run release:check -- v0.2.2
 ~~~
 
 After the preflight passes, create and push the matching tag:
 
 ~~~powershell
-git tag v0.2.1
-git push origin v0.2.1
+git tag v0.2.2
+git push origin v0.2.2
 ~~~
 
 Pushing a matching tag triggers GitHub Actions validation and creates a GitHub Release; npm publishing is not automatic.
