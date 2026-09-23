@@ -1,6 +1,6 @@
 {
   "name": "dsh-x-publisher",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "description": "DSH plugin for X OAuth 2.0 PKCE account authorization and official API posting",
   "private": false,
   "type": "module",
@@ -43,8 +43,8 @@
     "react": "^18.2.0"
   },
   "scripts": {
-    "check": "node --check lib/index.js && node --check lib/x-api.js && node --check lib/client.js",
-    "test": "node --test test/x-api.test.js test/release-check.test.js test/client.test.js test/profile.test.js",
+    "check": "node --check lib/index.js && node --check lib/x-api.js && node --check lib/loopback-callback.js && node --check lib/client.js",
+    "test": "node --test test/x-api.test.js test/loopback-callback.test.js test/release-check.test.js test/client.test.js test/profile.test.js",
     "release:check": "node ./scripts/release-check.mjs"
   }
 }

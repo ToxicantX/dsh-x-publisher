@@ -2,6 +2,13 @@
 
 All notable changes to this plugin are documented here.
 
+## [0.2.7] - 2026-09-23
+
+### Fixed
+
+- Keep the OAuth Callback URI fixed at `http://127.0.0.1:3080/x-publisher/oauth/callback` when DSH Desktop starts its Web Server on a random port.
+- Listen for the X OAuth callback on the fixed loopback address and report a clear error when port 3080 is unavailable.
+
 ## [0.2.6] - 2026-09-20
 
 ### Fixed

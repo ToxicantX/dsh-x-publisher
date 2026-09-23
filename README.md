@@ -36,19 +36,19 @@ dsh-x-publisher 是一个独立的 DSH bundle 插件。它通过 X 官方 API �
 - Node.js 20 或更高版本。
 - DSH Web profile 提供 authorization、credentials、webServer 和 tools 服务。
 - 一个启用了 OAuth 2.0 User Authentication 的 X Developer 应用。
-- X 应用使用 Public Client + PKCE，并拥有 tweet.write、users.read 和 offline.access scopes。
+- X 应用类型为 Native App 或 Single Page App（Public Client + PKCE），权限为 Read and write。
 
 ### X Developer Portal 配置
 
 在 X Developer Portal 创建应用并启用 OAuth 2.0 User Authentication。
 
-配置 Public Client + PKCE。插件会根据 DSH Web Server 当前监听地址和 callbackPath 自动生成 Redirect URI，例如：
+将 App type 配置为 Native App 或 Single Page App，并将 App permissions 配置为 Read and write。插件使用固定的本机 Redirect URI：
 
 ~~~text
 http://127.0.0.1:3080/x-publisher/oauth/callback
 ~~~
 
-首次启用前，仍需在 X Developer Portal 登记这个精确的 Callback URI。Redirect URI 在 X Developer Portal、插件生成的授权请求和 X 回调中必须逐字节一致。用户不需要设置 X_REDIRECT_URI；如果 DSH Web 端口发生变化，需要同步更新 X Developer Portal 中的 Callback URI。Public PKCE 流程不需要 Client Secret。
+首次启用前，需要在 X Developer Portal 登记这个精确的 Callback URI。Redirect URI 在 X Developer Portal、插件生成的授权请求和 X 回调中必须逐字节一致。插件会直接在 `127.0.0.1:3080` 接收回调，因此 DSH Web 的随机端口变化不会影响授权。Public PKCE 流程不需要 Client Secret；如果端口 3080 已被占用，插件会在发起授权时返回明确错误。
 
 需要的 scopes：
 
@@ -88,15 +88,15 @@ X_CLIENT_ID 是 X Developer 应用的公开标识，必须在授权请求发出�
 3. 点击 **保存**。
 4. 点击 **打开 X 授权**，在新标签页完成账户授权。
 
-设置页会自动显示当前 DSH Web 生成的 Callback URL。点击 **复制** 可复制完整地址，点击 **打开 X Developer Console** 可直接进入 X 控制台进行应用设置。
+设置页会显示固定的 Callback URL。点击 **复制** 可复制完整地址，点击 **打开 X Developer Console** 可直接进入 X 控制台进行应用设置。
 
-设置值由插件保存到 DSH credentials store，重启 DSH 后仍然有效。旧版环境变量 X_CLIENT_ID 仍可作为初始值使用，但设置页保存的值优先。不要设置 X_REDIRECT_URI；插件会在授权开始时根据当前 DSH Web Server 自动生成回调地址。不要把 Access Token、Refresh Token 或 Client Secret 写入插件目录、profile patch 或聊天内容。
+设置值由插件保存到 DSH credentials store，重启 DSH 后仍然有效。旧版环境变量 X_CLIENT_ID 仍可作为初始值使用，但设置页保存的值优先。不要设置 X_REDIRECT_URI；插件默认使用固定回调地址 `http://127.0.0.1:3080/x-publisher/oauth/callback`。不要把 Access Token、Refresh Token 或 Client Secret 写入插件目录、profile patch 或聊天内容。
 
 ### 使用方法
 
 1. 打开 DSH Web。
 2. 使用上面的公开 GitHub 命令安装插件。
-3. 进入 **设置 > X 发布**，保存 X Client ID，并确认 X Developer Portal 已登记当前 DSH Web 自动生成的 Callback URI。
+3. 进入 **设置 > X 发布**，保存 X Client ID，并确认 X Developer Portal 已登记设置页显示的固定 Callback URI。
 4. 重启 DSH Web。
 5. 在 DSH 授权界面选择 X posting account，或打开授权开始地址。
 6. 在浏览器中完成 X 账户授权。
@@ -143,14 +143,14 @@ npm run check
 发布遵循[语义化版本](https://semver.org/)（SemVer）。面向用户的变更必须记录在 [CHANGELOG.md](CHANGELOG.md)，版本号使用 `vX.Y.Z` tag。提交 package.json 和 CHANGELOG.md 后运行预检：
 
 ~~~powershell
-npm run release:check -- v0.2.5
+npm run release:check -- v0.2.7
 ~~~
 
 预检通过后创建并推送匹配的 tag：
 
 ~~~powershell
-git tag v0.2.5
-git push origin v0.2.5
+git tag v0.2.7
+git push origin v0.2.7
 ~~~
 
 推送匹配的 tag 会触发 GitHub Actions 验证并创建 GitHub Release；不会自动发布到 npm。
@@ -181,19 +181,19 @@ The plugin does not call an LLM itself. A DSH Agent forms the final text from th
 - Node.js 20 or newer.
 - A DSH Web profile with authorization, credentials, webServer, and tools services.
 - An X Developer application with OAuth 2.0 User Authentication enabled.
-- A Public Client using PKCE with tweet.write, users.read, and offline.access scopes.
+- A Native App or Single Page App (Public Client + PKCE) with Read and write permissions.
 
 ### X Developer Portal setup
 
 Create an application in the X Developer Portal and enable OAuth 2.0 User Authentication.
 
-Use Public Client + PKCE. The plugin automatically derives the Redirect URI from the current DSH Web Server address and callback path, for example:
+Set App type to Native App or Single Page App and App permissions to Read and write. The plugin uses this fixed local Redirect URI:
 
 ~~~text
 http://127.0.0.1:3080/x-publisher/oauth/callback
 ~~~
 
-Before first use, register that exact Callback URI in the X Developer Portal. The Redirect URI in the portal, generated authorization request, and X callback must match byte-for-byte. Users do not need to set X_REDIRECT_URI; if the DSH Web port changes, update the Callback URI in the X Developer Portal. A Public PKCE flow does not need a Client Secret.
+Before first use, register that exact Callback URI in the X Developer Portal. The Redirect URI in the portal, generated authorization request, and X callback must match byte-for-byte. The plugin listens directly on `127.0.0.1:3080`, so random DSH Web port changes no longer affect authorization. A Public PKCE flow does not need a Client Secret. If port 3080 is occupied, the plugin reports a clear error when authorization starts.
 
 Required scopes:
 
@@ -233,13 +233,13 @@ X_CLIENT_ID is the public identifier of the X Developer application and must be 
 3. Click **Save**.
 4. Click **Open X authorization** and complete account authorization in the new tab.
 
-The plugin stores the value in the DSH credentials store, so it survives a DSH restart. The legacy X_CLIENT_ID environment variable remains available as an initial fallback, but a value saved in Settings takes precedence. Do not set X_REDIRECT_URI. The plugin derives the callback URI from the current DSH Web Server when authorization starts. Never put access tokens, refresh tokens, or client secrets in the plugin directory, profile patch, or chat messages.
+The plugin stores the value in the DSH credentials store, so it survives a DSH restart. The legacy X_CLIENT_ID environment variable remains available as an initial fallback, but a value saved in Settings takes precedence. Do not set X_REDIRECT_URI. The default callback is fixed at `http://127.0.0.1:3080/x-publisher/oauth/callback`. Never put access tokens, refresh tokens, or client secrets in the plugin directory, profile patch, or chat messages.
 
 ### Usage
 
 1. Open DSH Web.
 2. Install the plugin with the public GitHub command above.
-3. Open **Settings > X Publisher**, save the X Client ID, and confirm that the X Developer Portal contains the Callback URI generated by the current DSH Web Server.
+3. Open **Settings > X Publisher**, save the X Client ID, and confirm that the X Developer Portal contains the fixed Callback URI shown in Settings.
 4. Restart DSH Web.
 5. Choose X posting account in the DSH authorization UI, or open the authorization start URL.
 6. Complete X account authorization in the browser.
@@ -286,14 +286,14 @@ Tests use deterministic PKCE fixtures and never contact X. The runtime uses nati
 Releases follow [Semantic Versioning](https://semver.org/) (SemVer). Record user-facing changes in [CHANGELOG.md](CHANGELOG.md) and use `vX.Y.Z` tags. After committing package.json and CHANGELOG.md, run the preflight:
 
 ~~~powershell
-npm run release:check -- v0.2.5
+npm run release:check -- v0.2.7
 ~~~
 
 After the preflight passes, create and push the matching tag:
 
 ~~~powershell
-git tag v0.2.5
-git push origin v0.2.5
+git tag v0.2.7
+git push origin v0.2.7
 ~~~
 
 Pushing a matching tag triggers GitHub Actions validation and creates a GitHub Release; npm publishing is not automatic.
