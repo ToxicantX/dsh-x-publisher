@@ -2,6 +2,12 @@
 
 All notable changes to this plugin are documented here.
 
+## [0.2.8] - 2026-09-29
+
+### Fixed
+
+- Align DSH and Cordis peer dependencies with DSH 0.2.0-rc.1 so the plugin passes runtime compatibility checks.
+
 ## [0.2.7] - 2026-09-23
 
 ### Fixed
